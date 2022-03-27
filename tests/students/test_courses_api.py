@@ -1,4 +1,5 @@
 import pytest
+from django.urls import reverse
 from model_bakery import baker
 from rest_framework.test import APIClient
 from students.models import Course, Student
@@ -66,12 +67,13 @@ def test_course_filter_id(client, course_factory):
     data = {'id': courses[0].id}
 
     # Act
-    response = client.get('/courses/1/')
+    url = reverse('courses-list')
+    response = client.get(url, data=data)
     response_server = response.json()
 
     # Assert
     assert response.status_code == 200
-    assert data['id'] == response_server['id']
+    assert data['id'] in [item['id'] for item in response_server]
 
 
 @pytest.mark.django_db
@@ -82,12 +84,13 @@ def test_course_filter_name(client, course_factory):
     data = {'name': courses[0].name}
 
     # Act
-    response = client.get('/courses/1/')
+    url = reverse('courses-list')
+    response = client.get(url, data=data)
     response_server = response.json()
 
     # Assert
     assert response.status_code == 200
-    assert data['name'] == response_server['name']
+    assert data['name'] in [item['name'] for item in response_server]
 
 
 @pytest.mark.django_db
