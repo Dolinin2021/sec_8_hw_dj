@@ -114,14 +114,14 @@ def test_patch_update_course(client, course_factory):
     courses = course_factory(_quantity=5)
 
     # Act
-    response_update = client.patch('/courses/1/', data={'name': 'Ivan',},)
+    response_update = client.patch('/courses/1/', data={'name': 'Ilya',},)
     response_get = client.get('/courses/1/')
     response_update_format = response_update.json()
     response_get_format = response_get.json()
 
     # Assert
     assert response_update.status_code == 200
-    assert response_update_format['id'] == response_get_format['id']
+    assert response_update_format['name'] == response_get_format['name']
 
 
 @pytest.mark.django_db
@@ -131,14 +131,14 @@ def test_put_update_course(client, course_factory):
     courses = course_factory(_quantity=5)
 
     # Act
-    response_update = client.put('/courses/1/', data={'name': 'Ivan',},)
+    response_update = client.put('/courses/1/', data={'name': 'Ilya',},)
     response_get = client.get('/courses/1/')
     response_update_format = response_update.json()
     response_get_format = response_get.json()
 
     # Assert
     assert response_update.status_code == 200
-    assert response_update_format['id'] == response_get_format['id']
+    assert response_update_format['name'] == response_get_format['name']
 
 
 @pytest.mark.django_db
