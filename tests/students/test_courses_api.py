@@ -28,17 +28,17 @@ def student_factory():
 def test_get_one_course(client, course_factory):
 
     # Arrange
-    courses = course_factory(_quantity=1)
+    courses = course_factory(_quantity=10)
+    course_id = courses[0].id
 
     # Act
-    response = client.get('/courses/1/')
+    url = reverse('courses-detail', args=[course_id])
+    response = client.get(url)
     data = response.json()
 
     # Assert
     assert response.status_code == 200
-
-    for item in courses:
-        assert item.id == data['id']
+    assert [item.id == data['id'] for item in courses]
 
 
 @pytest.mark.django_db
@@ -48,7 +48,8 @@ def test_get_courses_list(client, course_factory):
     courses = course_factory(_quantity=10)
 
     # Act
-    response = client.get('/courses/')
+    url = reverse('courses-list')
+    response = client.get(url)
     data = response.json()
 
     # Assert
@@ -98,9 +99,11 @@ def test_create_course(client):
 
     # Arrange
     count = Course.objects.count()
+    data = {'name': 'Ivan'}
 
     # Act
-    response = client.post('/courses/', data={'name': 'Ivan',},)
+    url = reverse('courses-list')
+    response = client.post(url, data=data,)
 
     # Assert
     assert response.status_code == 201
@@ -112,11 +115,16 @@ def test_patch_update_course(client, course_factory):
 
     # Arrange
     courses = course_factory(_quantity=5)
+    course_id = courses[0].id
+    data = {'name': 'Ilya'}
 
     # Act
-    response_update = client.patch('/courses/1/', data={'name': 'Ilya',},)
-    response_get = client.get('/courses/1/')
+    url = reverse('courses-detail', args=[course_id])
+
+    response_update = client.patch(url, data=data)
     response_update_format = response_update.json()
+
+    response_get = client.get(url)
     response_get_format = response_get.json()
 
     # Assert
@@ -129,11 +137,16 @@ def test_put_update_course(client, course_factory):
 
     # Arrange
     courses = course_factory(_quantity=5)
+    course_id = courses[0].id
+    data = {'name': 'Ilya'}
 
     # Act
-    response_update = client.put('/courses/1/', data={'name': 'Ilya',},)
-    response_get = client.get('/courses/1/')
+    url = reverse('courses-detail', args=[course_id])
+
+    response_update = client.put(url, data=data)
     response_update_format = response_update.json()
+
+    response_get = client.get(url)
     response_get_format = response_get.json()
 
     # Assert
@@ -147,9 +160,11 @@ def test_delete_course(client, course_factory):
     # Arrange
     courses = course_factory(_quantity=5)
     count = Course.objects.count()
+    course_id = courses[0].id
 
     # Act
-    response = client.delete('/courses/1/',)
+    url = reverse('courses-detail', args=[course_id])
+    response = client.delete(url)
 
     # Assert
     assert response.status_code == 204
